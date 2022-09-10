@@ -1,0 +1,14 @@
+{
+  "tables": {
+    "block": [
+      "page_id PRIMARY KEY",
+      "content",
+      "timestamp"
+    ],
+    "toc": [
+      "chapter_id",
+      "page_id",
+      "timestamp"
+    ]
+  }
+}

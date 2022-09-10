@@ -1,0 +1,31 @@
+{
+  "name": "bmd-tome",
+  "version": "1.0.0",
+  "description": "Well of all knowledge",
+  "main": "src/index.mjs",
+  "scripts": {
+    "start": "node src/index.mjs",
+    "test": "npx jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DeCorben/bmd-tome.git"
+  },
+  "author": "DeCorben",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DeCorben/bmd-tome/issues"
+  },
+  "homepage": "https://github.com/DeCorben/bmd-tome#readme",
+  "dependencies": {
+    "fastify": "^4.3.0",
+    "pg-format": "^1.0.4",
+    "sqlite": "^4.1.2",
+    "sqlite3": "^5.0.11"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.13",
+    "@babel/preset-env": "^7.18.10",
+    "jest": "^28.1.3"
+  }
+}
