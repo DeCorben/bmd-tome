@@ -66,7 +66,7 @@ describe('CRUD:', () => {
         return tome.listPage();
       })
       .then((res) => {
-        expect(res).toStrictEqual([ 1, 2, 3 ]);
+        expect(res).toStrictEqual({ list: [ 1, 2, 3 ] });
         expect(mockDb.all).toHaveBeenCalledTimes(1);
         expect(mockDb.all.mock.calls[0][0]).toBe('SELECT page_id FROM block');
         done();
@@ -132,7 +132,7 @@ describe('CRUD:', () => {
         return tome.listChapter();
       })
       .then((res) => {
-        expect(res).toStrictEqual([ 'lorem', 'ipsum' ]);
+        expect(res).toStrictEqual({ list: [ 'lorem', 'ipsum' ] });
         expect(mockDb.all).toHaveBeenCalledTimes(1);
         expect(mockDb.all.mock.calls[0][0]).toBe('SELECT chapter_id FROM toc');
         done();

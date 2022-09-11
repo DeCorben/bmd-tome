@@ -25,9 +25,9 @@ const tome = {
   deletePage: (page) => db.exec(format('DELETE * FROM block WHERE page_id = %L', page))
     .then((res) => `Deleted ${res.changes} rows.`),
   listChapter: () => db.all('SELECT chapter_id FROM toc')
-    .then((res) => res.map((v) => v.chapter_id)),
+    .then((res) => ({ list: res.map((v) => v.chapter_id) })),
   listPage: () => db.all('SELECT page_id FROM block')
-    .then((res) => res.map((v) => v.page_id)),
+    .then((res) => ({ list: res.map((v) => v.page_id) })),
   readChapter: (chapter, page, list) => db.get(format('SELECT (%I) FROM toc WHERE chapter_id = %L AND page_id = %L', list, chapter, page)),
   readPage: (page, list) => db.get(format('SELECT (%I) FROM block WHERE page_id = %L', list, page)),
   upsertChapter: (chapter) => {
@@ -39,8 +39,7 @@ const tome = {
       vals,
       trunc,
       trunc.map((v) => chapter[v])))
-      .then((res) => 'Upserted 1 rows.')
-      .catch((err) => err);
+      .then((res) => 'Upserted 1 rows.');
   },
   upsertPage: (page) => {
     const cols = Object.keys(page);
@@ -57,8 +56,7 @@ const tome = {
           return 'Upserted 1 rows.';
         }
         return res;
-      })
-      .catch((err) => err);
+      });
   },
 };
 

@@ -99,12 +99,12 @@ describe('Wave 1', () => {
       });
   });
 
-  it('put /chapter/{id}', (done) => {
+  it('put /chapter/{chapter_id}/{page_id}', (done) => {
     server.inject({
       method: 'put',
-      url: '/chapter/lorem',
+      url: '/chapter/lorem/1',
       payload: {
-        page_id: 1,
+        page_id: 2,
       },
     })
       .then((res) => {
@@ -142,14 +142,24 @@ describe('Wave 1', () => {
       });
   });
 
-  it.only('get /chapter', (done) => {
+  it('get /chapter', (done) => {
     server.inject({
       method: 'get',
       url: '/chapter',
     })
       .then((res) => {
-        console.log(res.body);
         expect(res.body).toStrictEqual(JSON.stringify({ list: ['lorem', 'ipsum', 'dolor'] }));
+        done();
+      });
+  });
+
+  it('says hello', (done) => {
+    server.inject({
+      method: 'get',
+      url: '/',
+    })
+      .then((res) => {
+        expect(res.body).toBe('Hello, World!');
         done();
       });
   });
