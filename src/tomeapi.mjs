@@ -1,7 +1,7 @@
 import { open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import format from 'pg-format';
-import config from '../src/config';
+import config from '../src/config.mjs';
 
 let db = null;
 
