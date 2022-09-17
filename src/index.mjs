@@ -1,3 +1,5 @@
+import config from 'dotenv-safe';
+config();
 import server from './server';
 
 server.ready()
