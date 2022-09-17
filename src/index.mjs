@@ -1,6 +1,6 @@
 import config from 'dotenv-safe';
 config();
-import server from './server';
+import server from './server.mjs';
 
 server.ready()
   .then(() => {
