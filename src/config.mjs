@@ -5,4 +5,3 @@ const configPath = 'data/config.json';
 const config = JSON.parse(fs.readFileSync(path.join(configPath)).toString());
 
 export default config;
-

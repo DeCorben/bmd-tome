@@ -56,21 +56,21 @@ describe('Wave 1', () => {
   });
 
   it('post /page/{id}', (done) => {
-   server.inject({
-     method: 'post',
-     url: '/page/1',
-     payload: {
-       fields: [
-         'page_id',
-         'content',
-         'timestamp'
-       ],
-     },
-   })
-     .then((res) => {
-       expect(res.body).toStrictEqual(JSON.stringify({ page_id: 1, content: 'lorem', timestamp: 'fuget' }));
-       done();
-     });
+    server.inject({
+      method: 'post',
+      url: '/page/1',
+      payload: {
+        fields: [
+          'page_id',
+          'content',
+          'timestamp',
+        ],
+      },
+    })
+      .then((res) => {
+        expect(res.body).toStrictEqual(JSON.stringify({ page_id: 1, content: 'lorem', timestamp: 'fuget' }));
+        done();
+      });
   });
 
   it('get /page', (done) => {
@@ -164,4 +164,3 @@ describe('Wave 1', () => {
       });
   });
 });
-

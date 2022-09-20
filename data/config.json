@@ -1,9 +1,9 @@
 {
   "tables": {
     "block": [
-      "page_id PRIMARY KEY",
+      "page_id INTEGER PRIMARY KEY",
       "content",
-      "timestamp"
+      "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP"
     ],
     "toc": [
       "chapter_id",

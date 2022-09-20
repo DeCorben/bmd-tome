@@ -6,51 +6,64 @@ import log from './log.mjs';
 
 let db = null;
 
-export const initDb = async () => {
-  log.debug('Initializing database');
-  db = await open({
-    filename: 'data/tome.db',
-    driver: sqlite3.Database,
-  })
-    .then(async (res) => {
-      // check table creation
-      Object.keys(config.tables).forEach(async (v) => {
-        await res.exec(format('CREATE TABLE IF NOT EXISTS %I (%I)', v, config.tables[v]));
-      });
-      return res;
+const initDb = async () => {
+  if (!db) {
+    log.debug('Initializing database');
+    db = await open({
+      filename: `data/${process.env.DBNAME}.db`,
+      driver: sqlite3.Database,
     });
+    log.silly('Post-open');
+    // check table creation
+    Object.keys(config.tables).forEach(async (v) => {
+      const colText = config.tables[v].join(',');
+      const qText = format('CREATE TABLE IF NOT EXISTS %I (%s)', v, colText);
+      log.silly(`Pre table load:${qText}`);
+      const callResult = await db.exec(qText);
+      log.debug(`initDb table load:${callResult}`);
+    });
+  }
+  log.silly(`Return db:${JSON.stringify(db, null, '\t')}`);
+  return db;
 };
 
 const tome = {
-  deleteChapter: (chapter, page) => {
+  deleteChapter: async (chapter, page) => {
+    await initDb();
     log.debug('tomeAPI deleteChapter');
     return db.exec(format('DELETE * FROM toc WHERE chapter_id = %L AND page_id = %L', chapter, page))
       .then((res) => `Deleted ${res.changes} rows.`);
   },
-  deletePage: (page) => {
+  deletePage: async (page) => {
+    await initDb();
     log.debug('tomeAPI deletePage');
     return db.exec(format('DELETE * FROM block WHERE page_id = %L', page))
       .then((res) => `Deleted ${res.changes} rows.`);
   },
-  listChapter: () => {
+  listChapter: async () => {
+    await initDb();
     log.debug('tomeAPI listChapter');
     return db.all('SELECT chapter_id FROM toc')
       .then((res) => ({ list: res.map((v) => v.chapter_id) }));
   },
-  listPage: () => {
+  listPage: async () => {
+    await initDb();
     log.debug('tomeAPI listPage');
     return db.all('SELECT page_id FROM block')
       .then((res) => ({ list: res.map((v) => v.page_id) }));
   },
-  readChapter: (chapter, page, list) => {
+  readChapter: async (chapter, page, list) => {
+    await initDb();
     log.debug('tomeAPI readChapter');
     return db.get(format('SELECT (%I) FROM toc WHERE chapter_id = %L AND page_id = %L', list, chapter, page));
   },
-  readPage: (page, list) => {
+  readPage: async (page, list) => {
+    await initDb();
     log.debug('tomeAPI readPage');
     return db.get(format('SELECT (%I) FROM block WHERE page_id = %L', list, page));
   },
-  upsertChapter: (chapter) => {
+  upsertChapter: async (chapter) => {
+    await initDb();
     log.debug('tomeAPI upsertChapter');
     const cols = Object.keys(chapter);
     const vals = cols.map((v) => chapter[v]);
@@ -64,7 +77,8 @@ const tome = {
     ))
       .then(() => 'Upserted 1 rows.');
   },
-  upsertPage: (page) => {
+  upsertPage: async (page) => {
+    await initDb();
     log.debug('tomeAPI upsertPage');
     const cols = Object.keys(page);
     const vals = cols.map((v) => page[v]);
@@ -78,6 +92,7 @@ const tome = {
     );
     return db.exec(query)
       .then((res) => {
+        log.debug(`tomeAPI db exec result:${JSON.stringify(res, null, '\t')}`);
         if (res.lastID === page.page_id) {
           return 'Upserted 1 rows.';
         }

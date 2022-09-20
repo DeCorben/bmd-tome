@@ -12,6 +12,7 @@ describe('CRUD:', () => {
     const ay = gen.page();
     mockDb.exec = jest.fn(() => Promise.resolve({ lastID: ay.page_id }));
     const vList = Object.values(ay);
+    const shortCols = Object.keys(ay).filter((v) => !v.match(/page_id/));
     initDb()
       .then(() => {
         jest.clearAllMocks();
@@ -20,7 +21,14 @@ describe('CRUD:', () => {
       .then((res) => {
         expect(res).toBe('Upserted 1 rows.');
         expect(mockDb.exec).toHaveBeenCalledTimes(1);
-        expect(mockDb.exec.mock.calls[0][0]).toBe(format('INSERT INTO block (page_id,content,timestamp) VALUES (%L) ON CONFLICT (page_id) DO UPDATE SET (content,timestamp) = (%L)', vList, vList.slice(1)));
+        const queryText = format(
+          'INSERT INTO block (%I) VALUES (%L) ON CONFLICT (page_id) DO UPDATE SET (%I) = (%L)',
+          Object.keys(ay),
+          vList,
+          shortCols,
+          shortCols.map((v) => ay[v]),
+        );
+        expect(mockDb.exec.mock.calls[0][0]).toBe(queryText);
         done();
       });
   });
@@ -59,14 +67,14 @@ describe('CRUD:', () => {
   });
 
   it('lists pages', (done) => {
-    mockDb.all = jest.fn(() => Promise.resolve([ { page_id: 1 }, { page_id: 2 }, { page_id: 3 } ]));
+    mockDb.all = jest.fn(() => Promise.resolve([{ page_id: 1 }, { page_id: 2 }, { page_id: 3 }]));
     initDb()
       .then(() => {
         jest.clearAllMocks();
         return tome.listPage();
       })
       .then((res) => {
-        expect(res).toStrictEqual({ list: [ 1, 2, 3 ] });
+        expect(res).toStrictEqual({ list: [1, 2, 3] });
         expect(mockDb.all).toHaveBeenCalledTimes(1);
         expect(mockDb.all.mock.calls[0][0]).toBe('SELECT page_id FROM block');
         done();
@@ -125,18 +133,17 @@ describe('CRUD:', () => {
   });
 
   it('lists chapters', (done) => {
-    mockDb.all = jest.fn(() => Promise.resolve([ { chapter_id: 'lorem' }, { chapter_id: 'ipsum' } ]));
+    mockDb.all = jest.fn(() => Promise.resolve([{ chapter_id: 'lorem' }, { chapter_id: 'ipsum' }]));
     initDb()
       .then(() => {
         jest.clearAllMocks();
         return tome.listChapter();
       })
       .then((res) => {
-        expect(res).toStrictEqual({ list: [ 'lorem', 'ipsum' ] });
+        expect(res).toStrictEqual({ list: ['lorem', 'ipsum'] });
         expect(mockDb.all).toHaveBeenCalledTimes(1);
         expect(mockDb.all.mock.calls[0][0]).toBe('SELECT chapter_id FROM toc');
         done();
       });
   });
 });
-

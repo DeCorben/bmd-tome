@@ -6,7 +6,9 @@ const log = winston.createLogger({
   level: process.env.LOGLEVEL || 'info',
   format: combine(timestamp(), json()),
   transports: [
-    new winston.transports.Console(),
+    new winston.transports.File({
+      filename: 'data/log.txt',
+    }),
   ],
 });
 
